@@ -1,6 +1,10 @@
 import React,{Component, Fragment} from 'react'
+import axios from 'axios'
+import { CSSTransition, TransitionGroup, } from 'react-transition-group';
 
 import XiaojiejieItem from './XiaojiejieItem'
+
+import Boos from './Boos'
 
 import './style.css'
 
@@ -8,7 +12,7 @@ class Xiaojiejie extends Component {
   constructor(props){
     
     super(props)
-    console.log(this)
+    // console.log(this)
     // 写在 constructor 里面比写在标签里面性能好
     this.inputChange = this.inputChange.bind(this)
     this.addList = this.addList.bind(this)
@@ -22,24 +26,14 @@ class Xiaojiejie extends Component {
     }
   }
 
-  static getDerivedStateFromProps (){
-    console.log('getDerivedStateFromProps  -- 组件将要挂载')
-    return null;
-  }
-
   componentDidMount(){
-    console.log('componentDidMount -- 组件挂载完成')
+    // axios.post('http://t.yushu.im/v2/movie/top250')
+    //   .then((res)=>{console.log('axios 获取数据成功' + JSON.stringify(res))})
+    //   .catch((error)=>{console.log('axios 获取数据失败'+error)})
   }
-
-  shouldComponentUpdate(){
-    console.log('shouldComponentUpdate -- 组件将要更新完成')
-
-    return true;
-  }
-
+  
   render(){
-    console.log('render -- 组件将要渲染')
-
+    // console.log('render -- 组件将要渲染')
     return (
       <Fragment>
         {/* add */}
@@ -56,19 +50,30 @@ class Xiaojiejie extends Component {
         </div>
           
         <ul ref = {ul => this.ul = ul}>
-          {
-            this.state.list.map((item, index) => {
-              return (
-                <XiaojiejieItem
-                  key={index+item}
-                  content={item}
-                  index={index}
-                  deleteItem={this.deleteItem}
-                 />
-              )
-            })
-          }
+          <TransitionGroup>
+            {
+              this.state.list.map((item, index) => {
+                return (
+                  <CSSTransition
+                    timeout={1000}
+                    classNames="boss-text"
+                    key={index+item}
+                    unmountOnExit
+                    appear={true}
+                  >
+                    <XiaojiejieItem
+                    key={index+item}
+                    content={item}
+                    index={index}
+                    deleteItem={this.deleteItem}
+                  />
+                  </CSSTransition>
+                )
+              })
+            }
+          </TransitionGroup>
         </ul>
+        <Boos/>
       </Fragment>
     )
   }
@@ -88,7 +93,7 @@ class Xiaojiejie extends Component {
     
   }
   // 删除列表项
-  deleteItem(index){
+  deleteItem(index){  
     let areaList = this.state.list
     // 不要直接操作 this.state.list.splice，这样会影响性能
     areaList.splice(index, 1) // 删除一个
